@@ -1,16 +1,22 @@
 import numpy as np
 import pandas as pd
+import re
 
-def extract_year(title):
-    index = title.find('(')
-    yearStr = title[index + 1:-1]
-    return int(yearStr)
+# Question 2: extract year from title into a new column of movie dataset
+
+def extract_release_year(row):
+    return pd.to_numeric(row["title"].rstrip()[-5:-1], errors="coerce")
+ 
+def create_release_year_column(movies):
+    movies["release_year"] = movies.apply(extract_release_year, axis = 1)
+
+def show_movies_without_release_year(movies):
+    return movies[movies["release_year"].isnull()]
 
 def main():
     movies_df = pd.read_csv("./resources/movies.csv")
-    movies_df["release_year"] = movies_df.apply(lambda m: m["title"][-5:-1], axis = 1)
-    # movies_df["release_year"] = movies_df["title"].str[-5:-1]
-    print(movies_df)
+    create_release_year_column(movies_df)
+    print(show_movies_without_release_year(movies_df))
 
 if __name__ == "__main__":
     main()
